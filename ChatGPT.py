@@ -1,13 +1,13 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import os
 import openai
-# import json
-# import requests
+from dotenv import load_dotenv
 
+load_dotenv()
+app = Flask(__name__) # os is being used to retrieve the environment-variable: OpenAI API key. 
 
-app = Flask(__name__)
-openai.organization = "org-yZ9iYd4rWaYlLEfWMT6sYE3s"
-openai.api_key = os.getenv("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") # os is being used to retrieve the environment-variable: OpenAI API key. 
+openai_api_key = os.getenv("OPENAI_API_KEY")
+organization_id = os.getenv("ID")
 
 completion = openai.ChatCompletion.create(   #the completion variable hold the JSON responce that the ChatGPT API recieves
     model="gpt-3.5-turbo",
@@ -17,16 +17,18 @@ completion = openai.ChatCompletion.create(   #the completion variable hold the J
       {"role": "user", "content": "Hello!"}
     ]
   )
+ChatGPT = completion["messages"][0]["content"]
+user_input = completion["messages"][1]["content"]
 
-@app.route("/")
+@app.route("/", methods=["POST"])
 def index():
-    chatgpt = completion["messages"][0]["content"]
-    user = completion["messages"][1]["content"]
-    return render_template("main.html", chatgpt=chatgpt, user=user )
 
+    if request.method == 'POST':
+        user_input = request.form["user"]
+        return render_template("main.html", ChatGPT=ChatGPT, user_input=user_input)
+  
 app.run(host="0.0.0.0", port=5000)
 
-print(completion.choices[0].message)
 
 #Example of the responce I would get from ChatGPT API
 # {   
