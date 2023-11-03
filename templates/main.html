@@ -11,8 +11,13 @@
       <p>ChatGPT generated questions</p>
     </header>
     <article>
-      <p>A couple of memes from {{ subreddit }} for now</p>
-      <img src="{{ meme_pic }}" alt="Memes" height="auto" width="auto" />
+      <h2>ChatGPT Response:</h2>
+      <p>{{ ChatGPT }}</p>
+
+      <h2>User input:</h2>
+      <form>
+        <input type="text" id="user-input" />
+      </form>
     </article>
   </body>
 </html>
