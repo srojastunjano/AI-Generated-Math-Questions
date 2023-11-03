@@ -1,20 +1,38 @@
-from flask import Flask, render_template
-import requests
-import json
+import os
+import openai
 
+import Constants
 
-app = Flask(__name__)
+openai.organization = "YOUR_ORG_ID"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def get_meme():
-    url="https://meme-api.com/gimme"
-    response = json.loads(requests.request("GET", url).text)
-    meme_large = response["preview"][-2]
-    subreddit = response["subreddit"]
-    return meme_large, subreddit
+completion = openai.ChatCompletion.create(   #the completion variable hold the JSON responce that the ChatGPT API recieves
+  model="gpt-3.5-turbo",
+  temperature = "0.8",
+  messages=[
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Hello!"}
+  ]
+)
 
-@app.route("/")
-def index():
-    meme_pic,subreddit = get_meme()
-    return render_template("main.html", meme_pic=meme_pic, subreddit=subreddit )
+print(completion.choices[0].message)
 
-app.run(host="0.0.0.0", port=80)
+#Example of the responce I would get from ChatGPT API
+# {   
+#   "id": "chatcmpl-123",
+#   "object": "chat.completion",
+#   "created": 1677652288,
+#   "model": "gpt-3.5-turbo-0613",
+#   "choices": [{
+#     "index": 0,
+#     "message": {
+#       "role": "assistant",
+#       "content": "\n\nHello there, how may I assist you today?",
+#     },
+#     "finish_reason": "stop"
+#   }],
+#   "usage": {
+#     "prompt_tokens": 9,
+#     "completion_tokens": 12,
+#     "total_tokens": 21
+#   }
