@@ -3,29 +3,28 @@ import os
 import openai
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("Environment.env")
 app = Flask(__name__) # os is being used to retrieve the environment-variable: OpenAI API key. 
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 organization_id = os.getenv("ID")
 
-completion = openai.ChatCompletion.create(   #the completion variable hold the JSON responce that the ChatGPT API recieves
-    model="gpt-3.5-turbo",
-    temperature = "0.8",
-    messages=[
-      {"role": "system", "content": "You are a helpful assistant."},
-      {"role": "user", "content": "Hello!"}
-    ]
-  )
-ChatGPT = completion["messages"][0]["content"]
-user_input = completion["messages"][1]["content"]
-
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET","POST"])
 def index():
+  completion = openai.ChatCompletion.create(   #the completion variable hold the JSON responce that the ChatGPT API recieves
+      model="gpt-3.5-turbo",
+      temperature = "0.8",
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Hello!"}
+      ]
+    )
 
-    if request.method == 'POST':
-        user_input = request.form["user"]
-        return render_template("main.html", ChatGPT=ChatGPT, user_input=user_input)
+  if request.method == 'POST':
+    completion["messages"][1]["content"] = request.form["user_input"]
+    ChatGPT = completion["messages"][0]["content"]
+    return render_template("main.html", ChatGPT=ChatGPT)
+
   
 app.run(host="0.0.0.0", port=5000)
 
