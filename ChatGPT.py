@@ -13,7 +13,6 @@ openai.api_key = API_KEY
 def index():
     gpt_answer = "No Answer yet"
     if request.method == 'POST':
-      print(user_input)
       completion = openai.ChatCompletion.create(   #the completion variable hold the JSON responce that the ChatGPT API recieves
         model="gpt-3.5-turbo",
         temperature = 0.8,
